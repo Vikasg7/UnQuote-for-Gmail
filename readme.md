@@ -1,6 +1,6 @@
 <h4>Download</h4>
 <a href="http://tinyurl.com/unquote-for-gmail" target="_blank">
-   <img src="images/ChromeWebStore_BadgeWBorder_v2_206x58.png" width="206" height="58">
+   <img src="https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png" width="206" height="58">
 </a>
 
 <h4>How it works!</h4>
@@ -13,7 +13,7 @@
 - It also take care of signatures and keep them intact.
 
 <h4>Important</h4>
-<p>Don't click on the `...` while writing your reply as it would embed the quoted text in the reply area. Just write your reply ignoring the `...` icon.</p>
+Don't click on the `...` while writing your reply as it would embed the quoted text in the reply area. Just write your reply ignoring the `...` icon.
 
 <h4>Donate</h4>
-<p>Like this extension! You can <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F3QQCWFPWHBYE" target="_blank">Buy me coffee</a></p>
+<p>Like this extension! You can <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=F3QQCWFPWHBYE" target="_blank">Buy me coffee</a>.</p>
