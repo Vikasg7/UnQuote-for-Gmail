@@ -2,7 +2,7 @@
 <h3>A chrome extension to remove quoted text from last mails while replying in conversation mode in gmail.</h3>
 
 <h4>Download</h4>
-<a href="http://tinyurl.com/unquote-for-gmail" target="_blank">
+<a href="http://tinyurl.com/unquote-for-gmail-chrome" target="_blank">
    <img src="https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png" width="206" height="58">
 </a>
 
