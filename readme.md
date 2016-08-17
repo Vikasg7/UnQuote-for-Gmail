@@ -15,6 +15,9 @@
 - You will see quoted text from previous mails is not there.
 - It also take care of signatures and keep them intact.
 
+<h4>Youtube Demo Link</h4>
+<a href="https://youtu.be/we1p8mUlb-0" target="_blank"></a>
+
 <h4>Important</h4>
 Don't click on the `...` while writing your reply as it would embed the quoted text in the reply area. Just write your reply ignoring the `...` icon.
 
