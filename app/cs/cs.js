@@ -42,7 +42,7 @@
       } else {
          var replyButton
          spans.forEach(function (span, i) {
-            if (span.innerText === "Reply") {
+            if (span.innerText.toLowerCase() === "reply") {
                replyButton = span
             }
          })
