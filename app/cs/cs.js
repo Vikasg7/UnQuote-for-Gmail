@@ -39,31 +39,30 @@
       var spans = document.querySelectorAll("span.ams")
       if (!spans.length) {
          console.log("Reply Button not found.")
-      } else {var replyButton
-			 
-       var replyAllButton
+      } else {
+         var replyButton 
+         var replyAllButton
 		 
-       spans.forEach(function (span, i) {
+         spans.forEach(function (span, i) {
             if (span.innerText.toLowerCase() === "reply") {
                replyButton = span
             }
-	  else if(span.innerText.toLowerCase() === "reply all"){
-				replyAllButton = span
-			}
+            else if (span.innerText.toLowerCase() === "reply all") {
+               replyAllButton = span
+            }
          })
 		 
-	if (!replyButton.id ) {
+         if (!replyButton.id ) {
             // console.log("Reply Button is null.")
             return
          }
-		 else if(!replyAllButton.id){
-			 // console.log("Reply Button is null.")
-			 return
-		 }
-	replyButton.addEventListener("click", buttonhandler)
-	replyAllButton.addEventListener("click", buttonhandler)
-       
-	  // console.log("Listener added to Reply and Reply All button.")
+         else if (!replyAllButton.id) {
+            // console.log("Reply Button is null.")
+            return
+         }
+         replyButton.addEventListener("click", buttonhandler)
+         replyAllButton.addEventListener("click", buttonhandler)
+         // console.log("Listener added to Reply and Reply All button.")
       }
    }
 
