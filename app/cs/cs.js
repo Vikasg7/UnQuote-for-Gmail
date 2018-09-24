@@ -61,8 +61,9 @@
 			 return
 		 }
 	replyButton.addEventListener("click", buttonhandler)
-		 replyAllButton.addEventListener("click", buttonhandler)
-         // console.log("Listener added to Reply button.")
+	replyAllButton.addEventListener("click", buttonhandler)
+       
+	  // console.log("Listener added to Reply and Reply All button.")
       }
    }
 
