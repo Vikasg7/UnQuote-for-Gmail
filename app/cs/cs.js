@@ -16,7 +16,7 @@
    }
 
    // Removing the previous listener, if any
-   window.removeEventListener("haschange", onHashChange)
+   window.removeEventListener("hashchange", onHashChange)
 
    // Adding an event listener
    window.addEventListener("hashchange", onHashChange)
@@ -39,24 +39,38 @@
       var spans = document.querySelectorAll("span.ams")
       if (!spans.length) {
          console.log("Reply Button not found.")
-      } else {
-         var replyButton
-         spans.forEach(function (span, i) {
+      } else {var replyButton
+			 
+       var replyAllButton
+		 
+       spans.forEach(function (span, i) {
             if (span.innerText.toLowerCase() === "reply") {
                replyButton = span
             }
+	  else if(span.innerText.toLowerCase() === "reply all"){
+				replyAllButton = span
+			}
          })
-         if (!replyButton.id) {
+		 
+	if (!replyButton.id ) {
             // console.log("Reply Button is null.")
             return
          }
-         replyButton.addEventListener("click", function () {
-            chrome.runtime.sendMessage({action: "removeQuotes"})
-         })
-         // console.log("Listener added to Reply button.")
+		 else if(!replyAllButton.id){
+			 // console.log("Reply Button is null.")
+			 return
+		 }
+	replyButton.addEventListener("click", buttonhandler)
+	replyAllButton.addEventListener("click", buttonhandler)
+       
+	  // console.log("Listener added to Reply and Reply All button.")
       }
    }
 
+   function buttonhandler(){
+	   chrome.runtime.sendMessage({action: "removeQuotes"});
+   }
+   
    function removeQuotes(extEnabled) {
       if (!extEnabled) {
          // console.log("Extension not enabled!")
