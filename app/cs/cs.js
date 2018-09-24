@@ -39,24 +39,47 @@
       var spans = document.querySelectorAll("span.ams")
       if (!spans.length) {
          console.log("Reply Button not found.")
-      } else {
-         var replyButton
+      } else {var replyButton
+		 
+		 
+		 var replyAllButton
+		 
          spans.forEach(function (span, i) {
             if (span.innerText.toLowerCase() === "reply") {
                replyButton = span
             }
+			
+			 
+			
+			else if(span.innerText.toLowerCase() === "reply all"){
+				replyAllButton = span
+			}
+			
          })
-         if (!replyButton.id) {
+		 
+		 
+		 
+         if (!replyButton.id ) {
             // console.log("Reply Button is null.")
             return
          }
-         replyButton.addEventListener("click", function () {
-            chrome.runtime.sendMessage({action: "removeQuotes"})
-         })
+		 else if(!replyAllButton.id){
+			 // console.log("Reply Button is null.")
+			 return
+		 }
+		 
+		
+		 
+         replyButton.addEventListener("click", buttonhandler)
+		 replyAllButton.addEventListener("click", buttonhandler)
          // console.log("Listener added to Reply button.")
       }
    }
 
+   function buttonhandler(){
+	   chrome.runtime.sendMessage({action: "removeQuotes"});
+   }
+   
    function removeQuotes(extEnabled) {
       if (!extEnabled) {
          // console.log("Extension not enabled!")
