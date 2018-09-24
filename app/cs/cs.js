@@ -16,7 +16,7 @@
    }
 
    // Removing the previous listener, if any
-   window.removeEventListener("haschange", onHashChange)
+   window.removeEventListener("hashchange", onHashChange)
 
    // Adding an event listener
    window.addEventListener("hashchange", onHashChange)
