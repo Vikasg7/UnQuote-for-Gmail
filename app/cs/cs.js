@@ -34,8 +34,8 @@
       }
    })
 
-   function addListenerToReplyButton() {
-      // console.log("yes, I am triggered!")
+   
+       function addListenerToReplyButton() { console.log("yes, I am triggered!")
       var spans = document.querySelectorAll("span.ams")
       if (!spans.length) {
          console.log("Reply Button not found.")
@@ -56,12 +56,15 @@
             // console.log("Reply Button is null.")
             return
          }
-		 else if(!replyAllButton.id){
+		 else if(replyAllButton){
 			 // console.log("Reply Button is null.")
-			 return
+			 if(!replyAllButton.id)
+					return
+				
+			 replyAllButton.addEventListener("click", buttonhandler)
 		 }
 	replyButton.addEventListener("click", buttonhandler)
-	replyAllButton.addEventListener("click", buttonhandler)
+	
        
 	  // console.log("Listener added to Reply and Reply All button.")
       }
@@ -77,7 +80,11 @@
       } else {
          // console.log("Extension is enabled!")
          var inputEle = document.querySelector("input[name='uet']")
-         var quotedText = inputEle.getAttribute("value")
+		 
+		 var trimmedEle = document.querySelector("div.ajR");
+		 trimmedEle.parentNode.removeChild(trimmedEle);	 
+         
+		 var quotedText = inputEle.getAttribute("value")
          var parser = new DOMParser()
          var doc = parser.parseFromString(quotedText, "text/html")
          var signature = doc.querySelector(".gmail_signature")
