@@ -56,12 +56,15 @@
             // console.log("Reply Button is null.")
             return
          }
-         else if (!replyAllButton.id) {
+         else if (replyAllButton) {
             // console.log("Reply Button is null.")
-            return
+	    if (!replyAllButton.id)
+		return
+	   replyAllButton.addEventListener("click", buttonhandler)	 
+            
          }
          replyButton.addEventListener("click", buttonhandler)
-         replyAllButton.addEventListener("click", buttonhandler)
+         
          // console.log("Listener added to Reply and Reply All button.")
       }
    }
@@ -76,6 +79,15 @@
       } else {
          // console.log("Extension is enabled!")
          var inputEle = document.querySelector("input[name='uet']")
+	 
+	 var trimmedEle = document.querySelector("div.ajR");
+	 trimmedEle.parentNode.removeChild(trimmedEle);
+	
+	 if (trimmedEle = document.querySelector("div.bTfW2d")) {
+		trimmedEle.parentNode.removeChild(trimmedEle);
+	}
+	 
+	 
          var quotedText = inputEle.getAttribute("value")
          var parser = new DOMParser()
          var doc = parser.parseFromString(quotedText, "text/html")
