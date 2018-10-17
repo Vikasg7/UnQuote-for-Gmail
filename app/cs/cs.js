@@ -1,5 +1,5 @@
 const { Observable, fromEvent, race, EMPTY, of, iif } = require("rxjs")
-const { delay, map, flatMap, take, catchError, defaultIfEmpty } = require("rxjs/operators")
+const { delay, map, flatMap, take, catchError, switchMap, defaultIfEmpty } = require("rxjs/operators")
 const { pipe, tap } = require("../utils")
 const { log, info } = console
 const R = {
@@ -59,14 +59,9 @@ const catchErrorOf = (funcName) =>
 
 const _addHandlerToReplyBtns = () => {
    const replyBtns = pipe(
-      document.querySelectorAll("span.ams"),
-      Array.from, // converts NodeList to Array
-      R.of,
-      R.ap([
-         getNodeByText("Reply"),
-         getNodeByText("Reply all")
-      ]),
-      R.filter(pipe(R.isNil, R.Not)),
+      [document.querySelector("span.ams.bkH"),
+       document.querySelector("span.ams.bkI")],
+      R.filter(pipe(R.isNil, R.Not))
    )
    
    const addHandler = pipe(
@@ -104,7 +99,7 @@ const addHandlersToSendDiscardBtns = () => {
 
 const addHandlerToReplyBtns = pipe(
    delay(2000),
-   flatMap(_addHandlerToReplyBtns),
+   switchMap(_addHandlerToReplyBtns),
    flatMap(addHandlersToSendDiscardBtns)
 )
 
