@@ -6,7 +6,7 @@
 
   "description": "Unquote text of previous mails from the reply.",
   
-  "version": "0.0.5",
+  "version": "0.0.6",
   
   "icons":{
       "128": "app/assets/icon.png"
@@ -28,7 +28,7 @@
         [
           "*://mail.google.com/*"
       ],
-      "js": ["app/cs/cs.js"],
+      "js": ["app/cs/bundle.js"],
       "run_at": "document_end"
    }
   ],

@@ -1,10 +1,10 @@
 (function (document, localStorage) {
 
-   var extEnabled = localStorage.extEnabled ? JSON.parse(localStorage.extEnabled) : false
+   var isExtEnabled = localStorage.isExtEnabled ? JSON.parse(localStorage.isExtEnabled) : false
 
    // Manipulating button text
    var btn = document.getElementsByClassName("btn")[0]
-   if (extEnabled) {
+   if (isExtEnabled) {
       btn.innerText = "Click here to Disable"
    } else {
       btn.innerText = "Click here to Enable"
@@ -12,13 +12,13 @@
 
    // Adding onClick Handler for Toggling Enable or disable
    btn.onclick = function () {
-      if (extEnabled) {
-         extEnabled = false
-         localStorage.extEnabled = extEnabled
+      if (isExtEnabled) {
+         isExtEnabled = false
+         localStorage.isExtEnabled = isExtEnabled
          btn.innerText = "Click here to Enable"
       } else {
-         extEnabled = true
-         localStorage.extEnabled = extEnabled
+         isExtEnabled = true
+         localStorage.isExtEnabled = isExtEnabled
          btn.innerText = "Click here to Disable"
       }
    }

@@ -1,89 +1,118 @@
-(function (window, document) {
+const { Observable, fromEvent, race, EMPTY, of, iif } = require("rxjs")
+const { delay, map, flatMap, take, catchError, defaultIfEmpty } = require("rxjs/operators")
+const { pipe, tap } = require("../utils")
+const { log, info } = console
+const R = {
+   ap: require("ramda/src/ap"),
+   filter: require("ramda/src/filter"),
+   propEq: require("ramda/src/propEq"),
+   head: require("ramda/src/head"),
+   ifElse: require("ramda/src/ifElse"),
+   equals: require("ramda/src/equals"),
+   map: require("ramda/src/map"),
+   tap: require("ramda/src/tap"),
+   of: require("ramda/src/of"),
+   Not: require("ramda/src/Not"),
+   isNil: require("ramda/src/isNil"),
+   isEmpty: require("ramda/src/isEmpty")
+}
 
-   window.onload = function () {
-      
-      setTimeout(addListenerToReplyButton, 2000)
-      
-      var statusMessage = document.querySelector("div.vh")
-      statusMessage.addEventListener("DOMSubtreeModified", function () {
-         if (statusMessage.innerText === "Your message has been sent." ||
-             statusMessage.innerText.search("Your message has been discarded.") > -1) {
-            setTimeout(function () {
-               chrome.runtime.sendMessage({action: "addListenerToReplyButton"})
-            }, 20)
-         }
-      })
-   }
-
-   // Removing the previous listener, if any
-   window.removeEventListener("hashchange", onHashChange)
-
-   // Adding an event listener
-   window.addEventListener("hashchange", onHashChange)
-
-   function onHashChange() {
-      chrome.runtime.sendMessage({action: "addListenerToReplyButton"})
-   }
-
-   chrome.runtime.onMessage.addListener(function (message) {
-      // console.log(message.action)
-      if (message.action === "_addListenerToReplyButton") {
-         addListenerToReplyButton()
-      } else if (message.action === "_removeQuotes") {
-         removeQuotes(message.isExtEnabled)
-      }
+const isExtEnabled = () => Observable.create((Observer) => {
+   chrome.extension.sendMessage({ action: "isExtEnabled" }, (msg) => {
+      Observer.next(msg)
+      Observer.complete()
    })
+})
 
-   function addListenerToReplyButton() {
-      // console.log("yes, I am triggered!")
-      var spans = document.querySelectorAll("span.ams")
-      if (!spans.length) {
-         console.log("Reply Button not found.")
-      } else {
-         var replyButton 
-         var replyAllButton
-		 
-         spans.forEach(function (span, i) {
-            if (span.innerText.toLowerCase() === "reply") {
-               replyButton = span
-            }
-            else if (span.innerText.toLowerCase() === "reply all") {
-               replyAllButton = span
-            }
-         })
-		 
-         if (!replyButton.id ) {
-            // console.log("Reply Button is null.")
-            return
-         }
-         else if (!replyAllButton.id) {
-            // console.log("Reply Button is null.")
-            return
-         }
-         replyButton.addEventListener("click", buttonhandler)
-         replyAllButton.addEventListener("click", buttonhandler)
-         // console.log("Listener added to Reply and Reply All button.")
-      }
-   }
+const getNodeByText = (text) => pipe(
+   R.filter(R.propEq("innerText", text)),
+   R.head
+)
 
-   function buttonhandler(){
-	   chrome.runtime.sendMessage({action: "removeQuotes"});
+const _removeQuotes = (isExtEnabled) => {
+   if (!isExtEnabled) {
+      info("Extension is not Enabled")
+      return of("") // pipe(EMPTY, defaultIfEmpty(""))
    }
+   return pipe(
+      of(document.querySelector("div.bTfW2d").parentNode),
+      map(trimIcon => trimIcon.click()),
+      delay(250),
+      map(() => {
+         const q = document.querySelector("div.ZyRVue .gmail_quote")
+         q.parentNode.removeChild(q)
+      }),
+      tap(() => info("Quotes removed"))
+   )
+}
+
+const removeQuotes = pipe(
+   isExtEnabled,
+   flatMap(_removeQuotes)
+)
+
+const catchErrorOf = (funcName) => 
+   catchError(pipe(
+      R.tap(x => log(funcName, x)),
+      () => EMPTY
+   ))
+
+const _addHandlerToReplyBtns = () => {
+   const replyBtns = pipe(
+      document.querySelectorAll("span.ams"),
+      Array.from, // converts NodeList to Array
+      R.of,
+      R.ap([
+         getNodeByText("Reply"),
+         getNodeByText("Reply all")
+      ]),
+      R.filter(pipe(R.isNil, R.Not)),
+   )
    
-   function removeQuotes(extEnabled) {
-      if (!extEnabled) {
-         // console.log("Extension not enabled!")
-      } else {
-         // console.log("Extension is enabled!")
-         var inputEle = document.querySelector("input[name='uet']")
-         var quotedText = inputEle.getAttribute("value")
-         var parser = new DOMParser()
-         var doc = parser.parseFromString(quotedText, "text/html")
-         var signature = doc.querySelector(".gmail_signature")
-         var newValue = signature ? signature.innerHTML : ""
-         inputEle.setAttribute("value", newValue)
-         // console.log("Quotes Removed!")            
-      }
-   }
+   const addHandler = pipe(
+      (btn) => fromEvent(btn, "click"),
+      take(1),
+      delay(3000),
+      flatMap(removeQuotes)
+   )
 
-})(window, document)
+   const replyBtns$ = R.map(addHandler, replyBtns)
+   info("Added handlers to Reply Buttons")
+   return iif(
+      () => R.isEmpty(replyBtns),
+      EMPTY,
+      pipe(race(...replyBtns$), tap(() => info("Reply btn clicked")))
+   )
+}
+
+const addHandlersToSendDiscardBtns = () => {
+   const btns$ = R.map(
+      pipe(
+         (btn) => fromEvent(btn, "click"),
+         take(1)
+      ),
+      [document.querySelector("div.aoO"),
+       document.querySelector("div.og")]
+   )
+   info("Added handlers to Discard Buttons")
+   return pipe(
+      race(...btns$),
+      tap(() => info("Discard/Send button clicked")),
+      addHandlerToReplyBtns
+   )
+}
+
+const addHandlerToReplyBtns = pipe(
+   delay(2000),
+   flatMap(_addHandlerToReplyBtns),
+   flatMap(addHandlersToSendDiscardBtns)
+)
+
+const main = pipe(
+   fromEvent(window, "hashchange"),
+   tap(() => info("hash changed")),
+   addHandlerToReplyBtns,
+   catchErrorOf("UnQuote for Gmail")
+)
+
+main.subscribe(null, log)

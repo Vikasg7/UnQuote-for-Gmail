@@ -1,0 +1,30 @@
+{
+  "name": "unquote-for-gmail",
+  "version": "0.0.6",
+  "description": "pending",
+  "main": "index.js",
+  "scripts": {
+    "test": "pending",
+    "watch-cs": "watchify app/cs/cs.js -o app/cs/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vikasg7/UnQuote-for-Gmail.git"
+  },
+  "keywords": [
+    "pending"
+  ],
+  "author": "Vikas Gautam <v33vikasgautam@gmail.com> (http://mytrikks.blogspot.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vikasg7/UnQuote-for-Gmail/issues"
+  },
+  "homepage": "https://github.com/Vikasg7/UnQuote-for-Gmail#readme",
+  "dependencies": {
+    "ramda": "^0.25.0",
+    "rxjs": "^6.3.3"
+  },
+  "devDependencies": {
+    "watchify": "^3.11.0"
+  }
+}
