@@ -68,7 +68,7 @@ const _addHandlerToReplyBtns = () => {
    const addHandler = pipe(
       (btn) => fromEvent(btn, "click"),
       take(1),
-      delay(3000),
+      delay(1000),
       flatMap(removeQuotes)
    )
 
@@ -99,7 +99,7 @@ const addHandlersToSendDiscardBtns = () => {
 }
 
 const addHandlerToReplyBtns = pipe(
-   delay(2000),
+   delay(1000),
    switchMap(_addHandlerToReplyBtns),
    flatMap(addHandlersToSendDiscardBtns)
 )
