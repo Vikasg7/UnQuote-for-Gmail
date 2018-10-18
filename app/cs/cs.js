@@ -57,56 +57,62 @@ const catchErrorOf = (funcName) =>
       () => EMPTY
    ))
 
-const _addHandlerToReplyBtns = () => {
-   const replyBtns = pipe(
-      [document.querySelector("span.ams.bkH"),
-       document.querySelector("span.ams.bkI")],
-      R.filter(pipe(R.isNil, R.Not))
+const toClickStream = pipe(
+   (btn) => fromEvent(btn, "click"),
+   take(1)
+)
+
+const getBtns = pipe(
+   R.map((s) => document.querySelector(s)),
+   R.filter(pipe(R.isNil, R.Not))
+)
+
+const addHandlerToReplyBtns = () => {
+   const replyBtns = getBtns(["span.ams.bkH", "span.ams.bkI"])
+
+   if (R.isEmpty(replyBtns)) {
+      log("Reply btns not found")
+      return EMPTY
+   }
+
+   const replyBtns$ = R.map(toClickStream, replyBtns)
+
+   const onReplyBtnClick = pipe(
+      tap(() => info("Reply btn clicked")),
+      delay(1000),
+      flatMap(removeQuotes),
+      flatMap(addHandlersToSendDiscardBtns)
    )
    
-   const addHandler = pipe(
-      (btn) => fromEvent(btn, "click"),
-      take(1),
-      delay(1000),
-      flatMap(removeQuotes)
-   )
-
-   const replyBtns$ = R.map(addHandler, replyBtns)
    info("Added handlers to Reply Buttons")
-   return iif(
-      () => R.isEmpty(replyBtns),
-      EMPTY,
-      pipe(race(...replyBtns$), tap(() => info("Reply btn clicked")))
-   )
+   return race(...replyBtns$).pipe(onReplyBtnClick)
 }
 
 const addHandlersToSendDiscardBtns = () => {
-   const btns$ = R.map(
-      pipe(
-         (btn) => fromEvent(btn, "click"),
-         take(1)
-      ),
-      [document.querySelector("div.aoO"),
-       document.querySelector("div.og")]
-   )
-   info("Added handlers to Discard Buttons")
-   return pipe(
-      race(...btns$),
-      tap(() => info("Discard/Send button clicked")),
-      addHandlerToReplyBtns
-   )
-}
+   const discardBtns = getBtns(["div.aoO", "div.og"])
 
-const addHandlerToReplyBtns = pipe(
-   delay(1000),
-   switchMap(_addHandlerToReplyBtns),
-   flatMap(addHandlersToSendDiscardBtns)
-)
+   if (R.isEmpty(discardBtns)) {
+      info("Send/Discard btns not founds")
+      return EMPTY
+   }
+
+   const discardBtns$ = R.map(toClickStream, discardBtns)
+
+   const onDiscardBtnClick = pipe(
+      tap(() => info("Discard/Send button clicked")),
+      delay(500),
+      flatMap(addHandlerToReplyBtns)
+   )
+
+   info("Added handlers to Discard Buttons")
+   return race(...discardBtns$).pipe(onDiscardBtnClick)
+}
 
 const main = pipe(
    fromEvent(window, "hashchange"),
    tap(() => info("hash changed")),
-   addHandlerToReplyBtns,
+   delay(1000),
+   switchMap(addHandlerToReplyBtns),
    catchErrorOf("UnQuote for Gmail")
 )
 

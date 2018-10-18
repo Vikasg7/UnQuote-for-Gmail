@@ -9,9 +9,11 @@ const curry = fn => (...args) =>
 const pipe = (input, ...fns) => {
    const isFunction = (fn) => typeof fn === 'function'
    const pipeIn = (...fns) => (input) => fns.reduce((prev, fn) => fn(prev), input)
-   return isFunction(input)
+   return (
+      isFunction(input)
       ? pipeIn(input, ...fns)
       : pipeIn(...fns)(input)
+   ) 
 }
 
 const tap = (fn) => {
