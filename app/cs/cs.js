@@ -12,9 +12,10 @@ const R = {
    map: require("ramda/src/map"),
    tap: require("ramda/src/tap"),
    of: require("ramda/src/of"),
-   Not: require("ramda/src/Not"),
+   not: require("ramda/src/not"),
    isNil: require("ramda/src/isNil"),
-   isEmpty: require("ramda/src/isEmpty")
+   isEmpty: require("ramda/src/isEmpty"),
+   last: require("ramda/src/last"),
 }
 
 const isExtEnabled = () => Observable.create((Observer) => {
@@ -34,8 +35,9 @@ const _removeQuotes = (isExtEnabled) => {
       info("Extension is not Enabled")
       return of("") // pipe(EMPTY, defaultIfEmpty(""))
    }
-   return pipe(
-      of(document.querySelector("div.bTfW2d").parentNode),
+   const trimNodes = Array.from(document.querySelectorAll("div.ajR"))
+   const lastTrimNode = R.last(trimNodes)
+   const removeNode = pipe(
       map(trimIcon => trimIcon.click()),
       delay(250),
       map(() => {
@@ -44,6 +46,7 @@ const _removeQuotes = (isExtEnabled) => {
       }),
       tap(() => info("Quotes removed"))
    )
+   return of(lastTrimNode).pipe(removeNode)
 }
 
 const removeQuotes = pipe(
@@ -64,7 +67,7 @@ const toClickStream = pipe(
 
 const getBtns = pipe(
    R.map((s) => document.querySelector(s)),
-   R.filter(pipe(R.isNil, R.Not))
+   R.filter(pipe(R.isNil, R.not))
 )
 
 const addHandlerToReplyBtns = () => {
