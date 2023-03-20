@@ -1,3 +1,2 @@
-node_modules/*
-*.zip
-*.swf
+node_modules/
+dist/

@@ -1,0 +1,15 @@
+#app {
+   width: 200px;
+   min-height: 150px;
+   max-height: 100vh;
+
+   font-family: 'Open Sans', sans-serif;;
+   background-color: white;
+
+   margin: auto;
+}
+
+ul {
+   list-style: none;
+   padding: 0;
+}
