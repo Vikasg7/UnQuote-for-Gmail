@@ -1,20 +1,18 @@
 globalThis.chrome = globalThis.browser ? globalThis.browser : globalThis.chrome
 
-const REPLY_BTNS  = ["div[data-tooltip='Reply']", "span.ams.bkH"]
-const FORWARD_BTN = "span.ams.bkG"
-const DISCARD_BTN = "div.og"
-const SEND_BTN    = "div.aoO"
-const TRIM_BTN    = "div.ajR"
+function getLastElement(selector, targetNode = document) {
+   return Array.from(targetNode.querySelectorAll(selector)).pop()
+}
 
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration * 1000))
 
-const waitForElement = (selector, timeout, targetNode = document.body) => 
+const waitForElement = (selector, timeout, targetNode = document) => 
    new Promise((resolve) => {
-      const element = document.querySelector(selector)
+      const element = getLastElement(selector, targetNode)
       if (element) return resolve(element);
 
       const observer = new MutationObserver(() => {
-         const element = document.querySelector(selector)
+         const element = getLastElement(selector, targetNode)
          if (!element) return;
          clearTimeout(id)
          observer.disconnect()
@@ -24,7 +22,7 @@ const waitForElement = (selector, timeout, targetNode = document.body) =>
       const id = setTimeout(() => {
          observer.disconnect()
          resolve()
-      }, timeout)
+      }, timeout * 1000)
 
       observer.observe(targetNode, { childList: true, subtree: true })
    })
@@ -39,44 +37,69 @@ const click = (element) =>
       element.click()
    })
 
+const TRIM_BTN    = "div.ajR"
+const TIMEOUT_SEC = 5
+
+const BUTTONS = {
+   Reply: {
+      selectors: ["div[data-tooltip='Reply']", "span.ams.bkH"],
+      handler: async function onClick() {
+         await removeQuotes()
+         await addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
+      }
+   },
+   Forward: {
+      selectors: ["span.ams.bkG"],
+      handler: async function onClick() {
+         await addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
+      }
+   },
+   Send: {
+      selectors: ["div.aoO"],
+      handler: async function onClick() {
+         await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
+      }
+   },
+   Discard: {
+      selectors: ["div.og"],
+      handler: async function onClick() {
+         await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
+      }
+   }
+}
+
 async function removeQuotes() {
    const { isExtEnabled } = await chrome.storage.sync.get(["isExtEnabled"])
    if (!isExtEnabled) return;
    
-   const trimBtn = await waitForElement(TRIM_BTN, 5000)
+   const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, getLastElement("div.gA.gt"))
    if (!trimBtn) return;
    await click(trimBtn)
    await sleep(0.5)
 
-   const quotes = document.querySelector("div.ZyRVue .gmail_quote")
-   quotes.parentNode.removeChild(quotes)
+   const quotes = document.querySelector("div.ZyRVue div.gmail_quote")
+   if (quotes) quotes.parentNode.removeChild(quotes);
 }
 
-async function onReply() {
-   await removeQuotes()
-   await addOnClickHandlerTo([SEND_BTN, DISCARD_BTN], onSendDiscard)
-}
-
-async function onSendDiscard() {
-   await addOnClickHandlerTo(REPLY_BTNS, onReply)
-   await addOnClickHandlerTo(FORWARD_BTN, onForward)
-}
-
-async function onForward() {
-   await addOnClickHandlerTo([SEND_BTN, DISCARD_BTN], onSendDiscard)
-}
-
-async function addOnClickHandlerTo(selectors, handler) {
-   selectors = Array.isArray(selectors) ? selectors : [selectors]
-   for (const selector of selectors) {
-      const element = await waitForElement(selector, 5000)
-      if (element) element.addEventListener("click", handler)
+async function addOnClickHandlerTo(btnTypes, BUTTONS) {
+   btnTypes = Array.isArray(btnTypes) ? btnTypes : [btnTypes]
+   for (const btnType of btnTypes) {
+      for (const selector of BUTTONS[btnType].selectors) {
+         const element = await waitForElement(selector, TIMEOUT_SEC)
+         if (!element) {
+            console.info(`addOnClickHandlersTo: Couldn't find ${btnType} button`)
+            continue
+         };
+         element.addEventListener("click", BUTTONS[btnType].handler)
+         console.info(`addOnClickHandlersTo: Added handler to ${btnType} button`)
+      }
    }
 }
 
-async function onHashChange() {
-   await addOnClickHandlerTo(REPLY_BTNS, onReply)
-   await addOnClickHandlerTo(FORWARD_BTN, onForward)
+async function main() {
+   await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
 }
 
-window.addEventListener("hashchange", onHashChange)
+window.addEventListener("hashchange", main)
+
+main()
