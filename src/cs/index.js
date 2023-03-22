@@ -38,6 +38,7 @@ const click = (element) =>
    })
 
 const TRIM_BTN    = "div.ajR"
+const QUOTES      = "div.ZyRVue div.gmail_quote"
 const TIMEOUT_SEC = 5
 
 const BUTTONS = {
@@ -77,7 +78,7 @@ async function removeQuotes() {
    await click(trimBtn)
    await sleep(0.5)
 
-   const quotes = document.querySelector("div.ZyRVue div.gmail_quote")
+   const quotes = document.querySelector(QUOTES)
    if (quotes) quotes.parentNode.removeChild(quotes);
 }
 
@@ -87,11 +88,11 @@ async function addOnClickHandlerTo(btnTypes, BUTTONS) {
       for (const selector of BUTTONS[btnType].selectors) {
          const element = await waitForElement(selector, TIMEOUT_SEC)
          if (!element) {
-            console.info(`addOnClickHandlersTo: Couldn't find ${btnType} button`)
+            // console.info(`addOnClickHandlersTo: Couldn't find ${btnType} button`)
             continue
          };
          element.addEventListener("click", BUTTONS[btnType].handler)
-         console.info(`addOnClickHandlersTo: Added handler to ${btnType} button`)
+         // console.info(`addOnClickHandlersTo: Added handler to ${btnType} button`)
       }
    }
 }
