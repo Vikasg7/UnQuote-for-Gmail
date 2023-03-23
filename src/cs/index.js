@@ -78,8 +78,16 @@ async function removeQuotes() {
    await click(trimBtn)
    await sleep(0.5)
 
-   const quotes = document.querySelector(QUOTES)
-   if (quotes) quotes.parentNode.removeChild(quotes);
+   let quotes = document.querySelector(QUOTES)
+   // Sometimes quotes doesn't show up, so retrying after 2 seconds
+   if (!quotes) {
+      await sleep(2)
+      await click(trimBtn)
+      await sleep(0.5)
+      quotes = document.querySelector(QUOTES)
+      if (!quotes) return;
+   }
+   quotes.parentNode.removeChild(quotes);
 }
 
 async function addOnClickHandlerTo(btnTypes, BUTTONS) {
