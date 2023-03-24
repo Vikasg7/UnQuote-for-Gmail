@@ -95,12 +95,8 @@ async function addOnClickHandlerTo(btnTypes, BUTTONS) {
    for (const btnType of btnTypes) {
       for (const selector of BUTTONS[btnType].selectors) {
          const element = await waitForElement(selector, TIMEOUT_SEC)
-         if (!element) {
-            // console.info(`addOnClickHandlersTo: Couldn't find ${btnType} button`)
-            continue
-         };
+         if (!element) continue;
          element.addEventListener("click", BUTTONS[btnType].handler)
-         // console.info(`addOnClickHandlersTo: Added handler to ${btnType} button`)
       }
    }
 }
