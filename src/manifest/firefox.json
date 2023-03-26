@@ -1,7 +1,7 @@
 {
    "name": "UnQuote for Gmail",
    "description": "Unquote text of previous mails from the reply",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "manifest_version": 3,
    "icons": {
       "128": "assets/icon.png"
@@ -32,7 +32,7 @@
    ],
    "browser_specific_settings": {
       "gecko": {
-         "id": "{8a8d43a6-ac26-4e0a-b167-cf9c318628ec}",
+         "id": "{a78a25b6-cbeb-11ed-afa1-0242ac120002}",
          "strict_min_version": "109.0"
       },
       "safari": {
