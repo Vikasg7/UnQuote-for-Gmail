@@ -43,28 +43,29 @@ const TIMEOUT_SEC = 5
 
 const BUTTONS = {
    Reply: {
-      selectors: ["div[data-tooltip='Reply']", "span.ams.bkH"],
+      selectors: ["div[data-tooltip='Reply']", "span.ams.bkH", "span.ams.bkI"],
       handler: async function onClick() {
          await removeQuotes()
-         await addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
+         addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
       }
    },
    Forward: {
       selectors: ["span.ams.bkG"],
       handler: async function onClick() {
-         await addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
+         await removeQuotes()
+         addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
       }
    },
    Send: {
       selectors: ["div.aoO"],
       handler: async function onClick() {
-         await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
+         addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
       }
    },
    Discard: {
       selectors: ["div.og"],
       handler: async function onClick() {
-         await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
+         addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
       }
    }
 }
@@ -74,35 +75,36 @@ async function removeQuotes() {
    if (!isExtEnabled) return;
    
    const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, getLastElement("div.gA.gt"))
-   if (!trimBtn) return;
-   await click(trimBtn)
-   await sleep(0.5)
-
-   let quotes = document.querySelector(QUOTES)
-   // Sometimes quotes doesn't show up, so retrying after 2 seconds
-   if (!quotes) {
-      await sleep(2)
+   if (trimBtn) {
+      await sleep(1)
       await click(trimBtn)
-      await sleep(0.5)
-      quotes = document.querySelector(QUOTES)
-      if (!quotes) return;
    }
+   const quotes = await waitForElement(QUOTES, TIMEOUT_SEC, getLastElement("div.gA.gt"))
+   if (!quotes) return;
    quotes.parentNode.removeChild(quotes);
 }
 
-async function addOnClickHandlerTo(btnTypes, BUTTONS) {
+// Its important to kickoff all the promises at the same time 
+// instead of await them, for not letting the timeout_wait on 
+// absent elements like Reply All to block the registering the 
+// handler on elements which are present.
+function addOnClickHandlerTo(btnTypes, BUTTONS) {
    btnTypes = Array.isArray(btnTypes) ? btnTypes : [btnTypes]
    for (const btnType of btnTypes) {
       for (const selector of BUTTONS[btnType].selectors) {
-         const element = await waitForElement(selector, TIMEOUT_SEC)
-         if (!element) continue;
-         element.addEventListener("click", BUTTONS[btnType].handler)
+         waitForElement(selector, TIMEOUT_SEC).then((element) => {
+            if (!element) return;
+            element.addEventListener("click", BUTTONS[btnType].handler)
+         })
       }
    }
 }
 
 async function main() {
-   await addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
+   await sleep(1)
+   const isEmailPage = await waitForElement("div.nH[role=list]", 0.5)
+   if (!isEmailPage) return;
+   addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
 }
 
 window.addEventListener("hashchange", main)
