@@ -4,15 +4,20 @@ function getLastElement(selector, targetNode = document) {
    return Array.from(targetNode.querySelectorAll(selector)).pop()
 }
 
+function getFirstElement(selector, targetNode = document) {
+   return targetNode.querySelector(selector)
+}
+
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration * 1000))
 
-const waitForElement = (selector, timeout, targetNode = document) => 
+const waitForElement = (selector, timeout, {targetNode = document, last = true} = {}) => 
    new Promise((resolve) => {
-      const element = getLastElement(selector, targetNode)
+      const getElement = last ? getLastElement : getFirstElement
+      const element = getElement(selector, targetNode)
       if (element) return resolve(element);
 
       const observer = new MutationObserver(() => {
-         const element = getLastElement(selector, targetNode)
+         const element = getElement(selector, targetNode)
          if (!element) return;
          clearTimeout(id)
          observer.disconnect()
@@ -31,6 +36,7 @@ const click = (element) =>
    new Promise((resolve) => {
       const onClick = () => {
          element.removeEventListener("click", onClick)
+         element.click() // clicking twice to make sure, it is clicked.
          resolve(true)
       }
       element.addEventListener("click", onClick)
@@ -74,12 +80,12 @@ async function removeQuotes() {
    const { isExtEnabled } = await chrome.storage.sync.get(["isExtEnabled"])
    if (!isExtEnabled) return;
    
-   const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, getLastElement("div.gA.gt"))
+   const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, { targetNode: getLastElement("div.gA.gt") })
    if (trimBtn) {
       await sleep(1)
       await click(trimBtn)
    }
-   const quotes = await waitForElement(QUOTES, TIMEOUT_SEC, getLastElement("div.gA.gt"))
+   const quotes = await waitForElement(QUOTES, TIMEOUT_SEC, { targetNode: getLastElement("div.gA.gt"), last: false})
    if (!quotes) return;
    quotes.parentNode.removeChild(quotes);
 }
