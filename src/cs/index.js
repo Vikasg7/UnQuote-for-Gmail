@@ -80,12 +80,14 @@ async function removeQuotes() {
    const { isExtEnabled } = await chrome.storage.sync.get(["isExtEnabled"])
    if (!isExtEnabled) return;
    
-   const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, { targetNode: getLastElement("div.gA.gt") })
+   const draft = getLastElement("div.gA.gt")
+   
+   const trimBtn = await waitForElement(TRIM_BTN, TIMEOUT_SEC, { targetNode: draft })
    if (trimBtn) {
       await sleep(1)
       await click(trimBtn)
    }
-   const quotes = await waitForElement(QUOTES, TIMEOUT_SEC, { targetNode: getLastElement("div.gA.gt"), last: false})
+   const quotes = await waitForElement(QUOTES, TIMEOUT_SEC, { targetNode: draft, last: false})
    if (!quotes) return;
    quotes.parentNode.removeChild(quotes);
 }
@@ -108,7 +110,7 @@ function addOnClickHandlerTo(btnTypes, BUTTONS) {
 
 async function main() {
    await sleep(1)
-   const isEmailPage = await waitForElement("div.nH[role=list]", 0.5)
+   const isEmailPage = await waitForElement("div[role=list]", 0.5)
    if (!isEmailPage) return;
    addOnClickHandlerTo(["Reply", "Forward"], BUTTONS)
 }
