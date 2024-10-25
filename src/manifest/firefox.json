@@ -1,7 +1,7 @@
 {
    "name": "UnQuote for Gmail",
    "description": "Unquote text of previous mails from the reply",
-   "version": "1.0.4",
+   "version": "1.0.5",
    "manifest_version": 3,
    "icons": {
       "128": "assets/icon.png"
