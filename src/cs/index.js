@@ -55,6 +55,12 @@ const BUTTONS = {
          addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
       }
    },
+   Forward: {
+      selectors: ["span.ams.bkG"],
+      handler: async function onClick() {
+         addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
+      }
+   },
    Send: {
       selectors: ["div.aoO"],
       handler: async function onClick() {
