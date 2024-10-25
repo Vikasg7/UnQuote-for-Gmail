@@ -55,13 +55,6 @@ const BUTTONS = {
          addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
       }
    },
-   Forward: {
-      selectors: ["span.ams.bkG"],
-      handler: async function onClick() {
-         await removeQuotes()
-         addOnClickHandlerTo(["Send", "Discard"], BUTTONS)
-      }
-   },
    Send: {
       selectors: ["div.aoO"],
       handler: async function onClick() {
@@ -94,7 +87,7 @@ async function removeQuotes() {
 
 // Its important to kickoff all the promises at the same time 
 // instead of await them, for not letting the timeout_wait on 
-// absent elements like Reply All to block the registering the 
+// absent elements like Reply All to block registering the 
 // handler on elements which are present.
 function addOnClickHandlerTo(btnTypes, BUTTONS) {
    btnTypes = Array.isArray(btnTypes) ? btnTypes : [btnTypes]
